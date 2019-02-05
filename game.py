@@ -5,6 +5,7 @@ import random
 import time
 import player
 import board
+import tree
 
 __all__ = ['Game']
 
@@ -22,6 +23,7 @@ class Game:
         self.fields = None
         self.my_bot_id = 0
         self.other_bot_id = 0
+        self.tree = None
 
         self.players = [player.Player(), player.Player()]
 
@@ -73,7 +75,8 @@ class Game:
                     if line_elements[2] == 'field':
                         if not self.fields:
                             self.fields = board.Board(self.field_width, self.field_height)
-                        self.fields.update(self.players, line_elements[3])
+                        self.fields.update(line_elements[3])
+                        self.tree = tree.Tree(self.fields, self.my_bot_id)
 
                 elif line_elements[0] == 'action' and line_elements[1] == 'move':
                     self.last_timebank = int(line_elements[2])
@@ -99,9 +102,14 @@ class Game:
 
     def do_turn(self):
         """ Method to calculate side to which bot should go. """
-        legal = self.fields.get_legal_moves(self.my_bot_id, self.players)
-        if not legal:
-            self.pass_turn()
+        # legal = self.fields.get_legal_moves(self.my_bot_id)
+        # if not legal:
+        #     self.pass_turn()
+        # else:
+        #     (_, chosen) = random.choice(legal)
+        #     self.order_turn(chosen)
+        move = self.tree.get_next_move()
+        if move:
+            self.order_turn(move[1])
         else:
-            (_, chosen) = random.choice(legal)
-            self.order_turn(chosen)
+            self.pass_turn()
