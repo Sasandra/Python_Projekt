@@ -72,7 +72,7 @@ class Tree:
         return self.print_paths(self.root, path, 0, paths)
 
     def print_paths(self, root, path, path_len, paths):
-        """ Recursive function finding all paths from root to leaves
+        """ Recursive function finding all paths from root to leaves.
         :param root: actual Node
         :param path: path at given Node
         :param path_len: path's length at given Node
