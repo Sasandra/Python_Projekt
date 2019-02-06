@@ -58,8 +58,8 @@ class Board:
 
         if boundary_cond:
             return self.check_if_filed_free(row, col, second_id)
-        else:
-            return False
+
+        return False
 
     def boundary_condition(self, row, col):
         """

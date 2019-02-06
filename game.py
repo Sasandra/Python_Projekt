@@ -1,7 +1,6 @@
 """Module with class to maintain game's system."""
 
 import sys
-import random
 import time
 import player
 import board

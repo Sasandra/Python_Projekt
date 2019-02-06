@@ -1,5 +1,4 @@
 """Module with classes to maintain board's predictions"""
-import copy
 import numpy as np
 
 
@@ -13,28 +12,29 @@ class Node:
         self.kids = []
         self.move_from_parent = move
 
+    def __str__(self):
+        return '.'.join(str(i) for i in self.board.fields.flatten())
+
     def generate_kids(self):
         """ Generate all possible boards from actual one"""
         my_legal_moves = self.board.get_legal_moves(self.my_id)
         original_row, original_col = np.where(self.board.fields == str(self.my_id))
 
         for (row, col), direction in my_legal_moves:
-            new_board = copy.deepcopy(self.board)
-            new_board.fields[original_row[0], original_col[0]] = 'x'
-            new_board.fields[row, col] = str(self.my_id)
+            self.board.fields[original_row[0], original_col[0]] = 'x'
+            self.board.fields[row, col] = str(self.my_id)
 
             opponent_legal_moves = self.board.get_legal_moves(self.opponent_id)
-            original_opp_row, original_opp_col = np.where(new_board.fields == str(self.opponent_id))
+            original_op_row, original_op_col = np.where(self.board.fields == str(self.opponent_id))
 
             if opponent_legal_moves:
                 for (op_row, op_col), _ in opponent_legal_moves:
-                    new_new_board = copy.deepcopy(new_board)
-                    new_new_board.fields[original_opp_row[0], original_opp_col[0]] = 'x'
-                    new_new_board.fields[op_row, op_col] = str(self.opponent_id)
-                    self.kids.append(Node(new_new_board, self.my_id, ((row, col), direction)))
+                    self.board.fields[original_op_row[0], original_op_col[0]] = 'x'
+                    self.board.fields[op_row, op_col] = str(self.opponent_id)
+                    self.kids.append(Node(self.board, self.my_id, ((row, col), direction)))
 
             else:
-                self.kids.append(Node(new_board, self.my_id, ((row, col), direction)))
+                self.kids.append(Node(self.board, self.my_id, ((row, col), direction)))
 
 
 class Tree:
@@ -42,6 +42,7 @@ class Tree:
 
     def __init__(self, board, my_id):
         self.root = Node(board, my_id, ((0, 0), 'None'))
+        self.generate_tree()
 
     def generate_tree(self):
         """Generate tree with height 3"""
@@ -56,16 +57,13 @@ class Tree:
         max_length_path = self.get_max_length_path()
         if len(max_length_path) > 2:
             return max_length_path[1].move_from_parent
-        else:
-            return None
+
+        return None
 
     def get_max_length_path(self):
         """Return longest path from root to leaf"""
         paths = self.find_all_paths()
-        if paths:
-            return max(paths, key=lambda c: len(c))
-        else:
-            return None
+        return max(paths, key=len)
 
     def find_all_paths(self):
         """Return all paths from root to leaves"""
@@ -81,7 +79,7 @@ class Tree:
         :param paths: list of all found paths
         """
         if root is None:
-            return
+            return paths
 
         if len(path) > path_len:
             path[path_len] = root

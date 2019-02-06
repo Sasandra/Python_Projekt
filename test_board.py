@@ -16,17 +16,7 @@ class BoardTest(unittest.TestCase):
 
         self.players = [Player(), Player()]
 
-        self.board.update(self.players, new_board)
-
-    def test_convert_coordinates_to_index(self):
-        """ Return True if (1,1) elem in 4x4 matrix is 5 in 16x1 vector"""
-        index = self.board.convert_coordinates_to_index(1, 1)
-        self.assertEqual(index, 5)
-
-    def test_convert_index_to_coordinates(self):
-        """ Return True if 10 elem in 16x1 vector is (2,2) elem in 4x4 matrix"""
-        row, col = self.board.convert_index_to_coordinates(10)
-        self.assertEqual((row, col), (2, 2))
+        self.board.update(new_board)
 
     def test_boundary_condition(self):
         """Return True if filed (2,2) is in board's range and filed (5,5) isn't"""
@@ -45,6 +35,6 @@ class BoardTest(unittest.TestCase):
 
     def test_get_legal_moves(self):
         """Return True when legal moves are calculated correctly."""
-        moves = set(self.board.get_legal_moves(1, self.players))
-        test_moves = {[((0, 1), "up"), ((1, 2), "right"), ((2, 1), "down"), ((1, 0), "left")]}
+        moves = set(self.board.get_legal_moves(1))
+        test_moves = set([((0, 1), "up"), ((1, 2), "right"), ((2, 1), "down"), ((1, 0), "left")])
         self.assertEqual(moves, test_moves)
